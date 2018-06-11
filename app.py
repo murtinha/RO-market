@@ -10,7 +10,7 @@ def hello_world():
 @app.route('/lowest-price')
 def lowest_price():
     id = request.args.get('id')
-    price = dict(price = get_lowest_price(id))
+    price = get_lowest_price(id)
     return jsonify(price)
 
 if __name__ == '__main__':
