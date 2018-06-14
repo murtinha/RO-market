@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, json, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from crawler import get_item
 import os
@@ -21,11 +21,17 @@ class Item(db.Model):
         self.price = price
 
     def __repr__(self):
-        return '<Item %r>' % (self.name)
+        return json.dumps(dict(
+                name = self.name,
+                price = self.price,
+                id = self.item_id
+            )
+        )
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def home():
+    items = Item.query.paginate().items
+    return render_template('home.html', items=items)
 
 @app.route('/lowest-price')
 def lowest_price():
@@ -35,14 +41,14 @@ def lowest_price():
 
 @app.route('/add-item', methods=['POST'])
 def add_item():
-    item_id = request.args.get('id')
+    item_id = request.form.get('item', '')
     item = get_item(item_id)
     price = item.get('price', '')
     name = item.get('name', '')
     dbcreate = Item(item_id, name, price) 
     db.session.add(dbcreate)
     db.session.commit()
-    return jsonify(dict(message = '%s was added to database'% name))
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)

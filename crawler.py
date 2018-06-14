@@ -14,13 +14,13 @@ def get_item(item_id):
     h_table = s.find_all('table', class_='horizontal-table')
     thead = h_table[1].thead
     ths = thead.tr.find_all('th')
-    for n in range(len(ths)):
+    for n in range(len(ths) - 1):
         if ths[n].a:
             if 'Price' in ths[n].a.text:
                 index = n
                 break
     tbody = h_table[1].tbody
-    tr = tbody.find_all('tr')[1]
+    tr = tbody.find_all('tr')[0]
     td = tr.find_all('td')[index].span
     return dict(name = name, price = td.text)
 
