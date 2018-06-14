@@ -14,17 +14,20 @@ class Item(db.Model):
     item_id = db.Column(db.Integer, unique=True)
     name = db.Column(db.String(100))
     price = db.Column(db.String(100))
+    image = db.Column(db.String(100))
 
-    def __init__(self, item_id, name, price):
+    def __init__(self, item_id, name, price, image):
         self.item_id = item_id
         self.name = name
         self.price = price
+        self.image = image
 
     def __repr__(self):
         return json.dumps(dict(
                 name = self.name,
                 price = self.price,
-                id = self.item_id
+                id = self.item_id,
+                image = self.image
             )
         )
 
@@ -45,7 +48,8 @@ def add_item():
     item = get_item(item_id)
     price = item.get('price', '')
     name = item.get('name', '')
-    dbcreate = Item(item_id, name, price) 
+    image = item.get('image', '')
+    dbcreate = Item(item_id, name, price, image) 
     db.session.add(dbcreate)
     db.session.commit()
     return redirect(url_for('home'))
