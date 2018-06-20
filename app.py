@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template, json, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from crawler import get_item
+from crawler import get_item, get_transaction_history
 import os
 
 app = Flask(__name__)
@@ -35,6 +35,12 @@ class Item(db.Model):
 def home():
     items = Item.query.paginate().items
     return render_template('home.html', items=items)
+
+@app.route('/transaction-history')
+def transaction_history():
+    item_id = request.args.get('id')
+    thistory = get_transaction_history(item_id)
+    return render_template('thistory.html', thistory=thistory)
 
 @app.route('/lowest-price')
 def lowest_price():

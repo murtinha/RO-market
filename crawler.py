@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 from bs4 import BeautifulSoup
 
 headers = {
@@ -29,7 +30,7 @@ def get_transaction_history(item_id):
     thistory = []
     page = 1
 
-    while len(thistory) < 100:
+    while len(thistory) < 15:
         market = requests.get('https://www.novaragnarok.com/?module=vending&action=itemhistory&id=%s&p=%s'% (item_id, page), headers = headers)
         s = BeautifulSoup(market.text, 'html.parser')
         h2s = s.find_all('h2')
@@ -48,7 +49,7 @@ def get_transaction_history(item_id):
             trs = tables[1].tbody.find_all("tr")
             for idx in range(len(trs)):
                 tds = trs[idx].find_all("td")
-                date = tds[0].text.strip()
+                date = re.match('.{8}', tds[0].text.strip()).group(0)
                 price = tds[1].text.strip()
                 thistory.append(dict(data = date, price = price))
             page = page + 1
@@ -56,4 +57,4 @@ def get_transaction_history(item_id):
             break
     print thistory
 
-
+get_transaction_history(4040)
